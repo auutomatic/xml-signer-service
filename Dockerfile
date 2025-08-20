@@ -1,13 +1,16 @@
-# Use the .NET runtime image directly (no SDK needed)
+# Use the .NET runtime image for linux-x64
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy the precompiled DLL and related files from the bin directory
+# Copy all files from the bin directory
 COPY bin/ .
+
+# Verify presence of SignXmlService.dll
+RUN ls -la && test -f SignXmlService.dll || { echo "SignXmlService.dll not found"; exit 1; }
 
 # Expose port 8085
 EXPOSE 8085
 ENV ASPNETCORE_URLS=http://+:8085
 
 # Run the precompiled DLL
-ENTRYPOINT ["dotnet", "SignXmlApi.dll"]
+ENTRYPOINT ["dotnet", "SignXmlService.dll"]
